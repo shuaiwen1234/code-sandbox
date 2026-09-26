@@ -28,4 +28,9 @@ public class ExecuteMessage {
      * 执行时间
      */
     private Long executeTime;
+
+    /**
+     * 占用的最大内存
+     */
+    private Long maxMemory;
 }
