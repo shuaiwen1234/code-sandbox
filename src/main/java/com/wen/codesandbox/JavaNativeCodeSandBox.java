@@ -19,11 +19,12 @@ public class JavaNativeCodeSandBox implements CodeSandBox {
 
     private final String GLOBAL_JAVA_CLASS_NAME = "Main.java";
 
+    String userParentCodePath = null;
+
     @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
         String userCode = executeCodeRequest.getCode();
         List<String> inputList = executeCodeRequest.getInput();
-        String userParentCodePath = null;
         ExecuteCodeResponse  executeCodeResponse = null;
 
         try {

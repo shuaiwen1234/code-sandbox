@@ -104,6 +104,7 @@ public class JavaDockerCodeSandBox implements CodeSandBox {
             //4. 执行用户代码
             //4.0 创建容器 上传编译好的用户代码文件
             //4.2.1 将宿主机文件与容器内文件绑定(将宿主机的文件放到容器内的指定目录)
+            //创建容器时需要用这个hostConfig来限制使用的内存
             HostConfig hostConfig = new HostConfig();
             hostConfig.setBinds(new Bind(userParentCodePath,new Volume("/tempCode")));
             //设置能使用的最大内存为256MB
@@ -114,6 +115,7 @@ public class JavaDockerCodeSandBox implements CodeSandBox {
                     .withAttachStdout(true)  //允许你的 Java 程序获取容器打印的正常日志/输出
                     .withAttachStderr(true)  //允许你的 Java 程序获取容器抛出的报错信息
                     .withCmd("tail", "-f", "/dev/null")  //通过监听一个永远不会有新内容的特殊文件来实现 让创建的容器一直存活(不加这个的话 Java 创建并启动容器后，容器会瞬间执行完毕并关闭)
+                    .withNetworkDisabled(true)
                     .withHostConfig(hostConfig);
             //创建容器
             CreateContainerResponse createContainerResponse = containerCmd.exec();
@@ -210,6 +212,7 @@ public class JavaDockerCodeSandBox implements CodeSandBox {
                 //statsResultCallBack.close();
                 if (!isFinished) {
                     runExecuteMessage.setErrorMessage("执行超时，最大执行时长为 10s");
+                    executeCodeResponse.setStatus(ExecuteEnum.CODE_TIME_OUT.getValue());
                 } else {
                     runExecuteMessage.setSuccessMessage(successSB.length() > 0 ? successSB.toString().trim() : "");
                     runExecuteMessage.setErrorMessage(errSB.length() > 0 ? errSB.toString().trim() : "");
@@ -226,9 +229,13 @@ public class JavaDockerCodeSandBox implements CodeSandBox {
             List<String> outPutList = new ArrayList<>();
             for(ExecuteMessage executeMessage1 : executeMessageList){
                 if(StrUtil.isNotBlank(executeMessage1.getErrorMessage())){
+                    //当错误信息不为空
                     executeCodeResponse.setMessage(executeMessage1.getErrorMessage());
                     //用户的代码在执行时出现错误
-                    executeCodeResponse.setStatus(ExecuteEnum.CODE_EXECUTE_ERROR.getValue());
+                    //当错误不是超时错误时 设置status
+                    if(executeCodeResponse.getStatus()!=ExecuteEnum.CODE_TIME_OUT.value) {
+                        executeCodeResponse.setStatus(ExecuteEnum.CODE_EXECUTE_ERROR.getValue());
+                    }
                     //执行出错了
                     hasError=true;
                 }
@@ -298,7 +305,9 @@ public class JavaDockerCodeSandBox implements CodeSandBox {
         String testCode = ResourceUtil.readStr("testCode/TestCode1.java", StandardCharsets.UTF_8);
         executeCodeRequest.setCode(testCode);
 
-        JavaDockerCodeSandBox javaDockerCodeSandBox = new JavaDockerCodeSandBox();
+        /*JavaDockerCodeSandBox javaDockerCodeSandBox = new JavaDockerCodeSandBox();
+        javaDockerCodeSandBox.init();*/
+        newJavaDockerCodeSandBox javaDockerCodeSandBox = new newJavaDockerCodeSandBox();
         javaDockerCodeSandBox.init();
         ExecuteCodeResponse executeCodeResponse = javaDockerCodeSandBox.executeCode(executeCodeRequest);
         System.out.println(executeCodeResponse);

@@ -15,7 +15,8 @@ public enum ExecuteEnum {
     CODE_COMPILE_ERROR("代码编译错误",1),
     CODE_SANDBOX_ERROR("代码沙箱出现异常",2),
     CODE_EXECUTE_ERROR("代码在执行时发生错误",3),
-    SUCCESS("代码执行成功",4);
+    CODE_TIME_OUT("代码运行超时",4),
+    SUCCESS("代码执行成功",5);
 
 
 
