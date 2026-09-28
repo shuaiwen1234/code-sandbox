@@ -11,6 +11,7 @@ import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.wen.codesandbox.model.*;
 import com.wen.codesandbox.utils.ThreadUtil;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.Closeable;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class newJavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
 
     private final DockerClient dockerClient = DockerClientBuilder.getInstance().build();
