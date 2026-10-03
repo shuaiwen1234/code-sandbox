@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+@Deprecated
 public class JavaDockerCodeSandBox implements CodeSandBox {
 
     private final String GLOBAL_CODE_PATH = "tempCode";

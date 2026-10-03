@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@Deprecated
 public class JavaNativeCodeSandBox implements CodeSandBox {
 
     private final String GLOBAL_CODE_PATH = "tempCode";

@@ -2,13 +2,12 @@ package com.wen.codesandbox.controller;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.wen.codesandbox.model.ExecuteCodeRequest;
 import com.wen.codesandbox.model.ExecuteCodeResponse;
 import com.wen.codesandbox.newJavaDockerCodeSandBox;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,14 +27,12 @@ public class MainController {
     private final String TIME_STAMP_HEADER = "timeStamp";
     private final String RANDOM_HEADER = "random";
 
-    // 推荐显式声明泛型
-    private final Cache cache = Caffeine.newBuilder()
-            .expireAfterWrite(5, TimeUnit.MINUTES)
-            .maximumSize(10000)
-            .build();
+
 
     @Autowired
     private newJavaDockerCodeSandBox javaDockerCodeSandBox;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @GetMapping("/health")
     public String health() {
@@ -73,7 +70,7 @@ public class MainController {
 
         // 3. 重放攻击校验
         String cacheKey = timeStamp + "_" + random;
-        if (cache.getIfPresent(cacheKey) != null) {
+        if (redisTemplate.opsForValue().get(cacheKey) != null) {
             response.setStatus(403);
             return null;
         }
@@ -88,7 +85,7 @@ public class MainController {
         }
 
         // 5. 校验全部通过后再写入缓存
-        cache.put(cacheKey, 1);
+        redisTemplate.opsForValue().set(cacheKey, 1);
 
         return javaDockerCodeSandBox.executeCode(executeCodeRequest);
     }

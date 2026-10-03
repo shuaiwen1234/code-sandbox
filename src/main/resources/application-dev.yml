@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: code-sandbox
+  redis:
+    database: ${redis.database}
+    host: ${redis.host}
+    port: ${redis.port}
+    timeout: 5000
+    password: ${redis.password}
+server:
+  port: ${prot}
+
+
