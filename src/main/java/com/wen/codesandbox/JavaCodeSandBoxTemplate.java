@@ -142,6 +142,11 @@ public abstract class JavaCodeSandBoxTemplate implements CodeSandBox {
                 ExecuteCodeResponse compileErrorResponse = new ExecuteCodeResponse();
                 compileErrorResponse.setMessage("编译错误: " + compileMessage.getErrorMessage());
                 compileErrorResponse.setStatus(ExecuteEnum.CODE_COMPILE_ERROR.getValue());
+                JudgeInfo judgeInfo = new JudgeInfo();
+                judgeInfo.setTime(-1L);
+                judgeInfo.setMemory(-1L);
+                judgeInfo.setMessage("编译错误");
+                compileErrorResponse.setJudgeInfo(judgeInfo);
                 return compileErrorResponse;
             }
             //3. 执行用户代码并获取输出
