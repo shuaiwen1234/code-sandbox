@@ -68,14 +68,9 @@ public class MainController {
             return null;
         }
 
-        // 3. 重放攻击校验
         String cacheKey = timeStamp + "_" + random;
-        if (redisTemplate.opsForValue().get(cacheKey) != null) {
-            response.setStatus(403);
-            return null;
-        }
 
-        // 4. 签名合法性校验
+        // 3. 签名合法性校验
         String key = SECRET_KEY + SALT;
         String str = key + timeStamp + random;
         String accessKey = DigestUtil.md5Hex(str);
@@ -84,8 +79,10 @@ public class MainController {
             return null;
         }
 
+        // 4. 重放攻击校验
         // 5. 校验全部通过后再写入缓存
-        redisTemplate.opsForValue().set(cacheKey, 1);
+        Boolean isSuccess = redisTemplate.opsForValue()
+                .setIfAbsent(cacheKey, 1, 5, TimeUnit.MINUTES);
 
         return javaDockerCodeSandBox.executeCode(executeCodeRequest);
     }
